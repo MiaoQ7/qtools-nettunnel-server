@@ -194,6 +194,7 @@ const server = http.createServer(async (req, res) => {
   try {
     // 解析请求的 URL
     const parsedUrl = url.parse(req.url);
+    console.log(parsedUrl)
     // 解析查询参数
     let text = 'success'
     const queryParams = querystring.parse(parsedUrl.query);
