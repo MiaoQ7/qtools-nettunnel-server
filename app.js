@@ -176,7 +176,7 @@ const server = http.createServer(async (req, res) => {
     // 解析查询参数
     let text = 'success'
     const queryParams = querystring.parse(parsedUrl.query);
-    if (parsedUrl.path == '/add') {
+    if (parsedUrl.pathname == '/add') {
       let conf = await findDomainAndPort()
       if (!conf.domain) {
         throw Error('domain not find')
@@ -184,7 +184,7 @@ const server = http.createServer(async (req, res) => {
       await createNginx(conf)
       text = JSON.stringify(conf)
     }
-    if (parsedUrl.path == '/heartbeat') {
+    if (parsedUrl.pathname == '/heartbeat') {
       let domain = queryParams['domain']
       let port = parseInt(queryParams['port'])
       console.log(queryParams)
