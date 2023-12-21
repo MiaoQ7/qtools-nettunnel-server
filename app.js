@@ -187,30 +187,19 @@ const server = http.createServer(async (req, res) => {
     if (parsedUrl.path == '/heartbeat') {
       let domain = queryParams['domain']
       let port = parseInt(queryParams['port'])
+      console.log(queryParams)
       if (domain && port) {
         if (!fs.existsSync(path.join(nginx_conf_path, domain + '.conf'))) {
-          if (await isPortTaken(port)) {
-            port = 0
-            let count = 10
-            while (count-- > 0) {
-              port = randomInt(50000, 60000)
-              if (!await isPortTaken(port)) {
-                break
-              }
-            }
+          let buf = fs.readFileSync(path.join(__dirname, 'template_proxy.conf'), { encoding: 'utf-8' })
+          buf = buf.replace(/\$\{server_name\}/g, domain).replace('${proxy_address}', `http://127.0.0.1:${port}`)
+          confPath = path.join(nginx_conf_path, domain + '.conf')
+          if (fs.existsSync(confPath)) {
+            fs.unlinkSync(confPath)
           }
-          if (port > 0) {
-            let buf = fs.readFileSync(path.join(__dirname, 'template_proxy.conf'), { encoding: 'utf-8' })
-            buf = buf.replace(/\$\{server_name\}/g, domain).replace('${proxy_address}', `http://127.0.0.1:${port}`)
-            confPath = path.join(nginx_conf_path, domain + '.conf')
-            if (fs.existsSync(confPath)) {
-              fs.unlinkSync(confPath)
-            }
-            fs.writeFileSync(confPath, buf, { encoding: 'utf-8' })
-            await restartNginx()
+          fs.writeFileSync(confPath, buf, { encoding: 'utf-8' })
+          await restartNginx()
 
-            text = JSON.stringify({domain, port})
-          }
+          text = JSON.stringify({domain, port})
         }
       }
     }
