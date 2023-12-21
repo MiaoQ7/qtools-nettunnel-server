@@ -33,9 +33,11 @@ async function startFrps() {
 
 startFrps()
 
-// /www/server/panel/pyenv/bin/python /www/server/panel/class/acme_v2.py --domain a.qq.miaomiao.press --type http --path /www/wwwroot/a.qq.miaomiao.press
-// nginx -t
-// nginx -s reload
+deleteFilesInDirectory(nginx_conf_path).then(() => {
+  deleteFilesInDirectory(nginx_root_path).then(() => {
+    restartNginx()
+  })
+})
 
 async function restartNginx() {
   if (await checkNginx(nginx_bin_path)) {
