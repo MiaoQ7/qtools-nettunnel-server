@@ -195,6 +195,7 @@ const server = http.createServer(async (req, res) => {
     // 解析请求的 URL
     const parsedUrl = url.parse(req.url);
     // 解析查询参数
+    let text = 'success'
     const queryParams = querystring.parse(parsedUrl.query);
     if (parsedUrl == '/add') {
       let conf = await findDomainAndPort()
@@ -202,13 +203,14 @@ const server = http.createServer(async (req, res) => {
         throw Error('domain not find')
       }
       await createNginx(conf)
+      text = JSON.stringify(conf)
     }
 
     // 设置响应头
     res.writeHead(200, {'Content-Type': 'text/plain'});
 
     // 发送响应数据
-    res.end(`success`);
+    res.end(text);
   } catch (e) {
     console.log(e)
     // 设置响应头
