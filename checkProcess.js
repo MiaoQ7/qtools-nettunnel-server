@@ -90,12 +90,16 @@ module.exports = {
     })
   },
   createSSL(cmd) {
+    console.log(cmd)
     return new Promise((resolve, reject) => {
       exec(cmd, (error, stdout, stderr) => {
         if (error) {
+          console.log(error)
           // 在这里可以进行错误处理逻辑
           resolve(false)
         } else {
+          console.log(stdout)
+          console.log(stderr)
           // 在这里可以进行成功处理逻辑
           resolve(true)
         }
