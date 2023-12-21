@@ -114,7 +114,7 @@ setInterval(async () => {
 }, 1000 * 3600)
 
 function generateRandomString(length) {
-  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz';
   let randomString = '';
 
   for (let i = 0; i < length; i++) {
@@ -177,7 +177,7 @@ async function createNginx({domain, port}) {
   fs.writeFileSync(confPath, buf, { encoding: 'utf-8' })
   fs.mkdirSync(path.join(nginx_root_path, domain))
   await restartNginx()
-  await createSSL(`${bt_panel_path}/pyenv/bin/python ${bt_panel_path}/class/acme_v2.py --domain ${doamin} --type http --path ${nginx_root_path}/${domain}`)
+  await createSSL(`${bt_panel_path}/pyenv/bin/python ${bt_panel_path}/class/acme_v2.py --domain ${domain} --type http --path ${nginx_root_path}/${domain}`)
 
   buf = fs.readFileSync(path.join(__dirname, 'template_proxy.conf'), { encoding: 'utf-8' })
   buf = buf.replace(/\$\{server_name\}/g, domain).replace('${proxy_address}', `http://127.0.0.1:${port}`)
@@ -186,7 +186,6 @@ async function createNginx({domain, port}) {
     fs.unlinkSync(confPath)
   }
   fs.writeFileSync(confPath, buf, { encoding: 'utf-8' })
-  fs.mkdirSync(path.join(nginx_root_path, domain))
   await restartNginx()
 }
 
