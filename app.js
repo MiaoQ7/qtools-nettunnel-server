@@ -10,7 +10,7 @@ const querystring = require('querystring');
 const fs = require('fs');
 const path = require('path');
 const net = require('net');
-const {processToCheck,processToKill,startProcess,checkNginx,reloadNginx,createSSL} = require('./checkProcess')
+const {processToCheck,processToKill,startProcess,checkNginx,reloadNginx,createSSL,deleteDirectory} = require('./checkProcess')
 
 //===========nginx config=========================
 const nginx_conf_path = '/www/server/panel/vhost/nginx'
@@ -42,29 +42,6 @@ deleteFilesInDirectory(nginx_conf_path).then(() => {
 async function restartNginx() {
   if (await checkNginx(nginx_bin_path)) {
     await reloadNginx(nginx_bin_path)
-  }
-}
-
-function deleteDirectory(directoryPath) {
-  // 递归删除目录及其内容
-  if (fs.existsSync(directoryPath)) {
-    fs.readdirSync(directoryPath).forEach(file => {
-      const filePath = path.join(directoryPath, file);
-
-      if (fs.lstatSync(filePath).isDirectory()) {
-        // 如果是子目录，则递归删除子目录
-        deleteDirectory(filePath);
-      } else {
-        // 如果是文件，则删除文件
-        fs.unlinkSync(filePath);
-      }
-    });
-
-    // 删除空目录
-    fs.rmdirSync(directoryPath);
-    console.log('Directory deleted:', directoryPath);
-  } else {
-    console.error('Directory does not exist:', directoryPath);
   }
 }
 

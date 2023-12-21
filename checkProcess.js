@@ -101,5 +101,18 @@ module.exports = {
         }
       });
     })
+  },
+  deleteDirectory (directory) {
+    return new Promise((resolve, reject) => {
+      exec(`rm -fr ${directory}`, (error, stdout, stderr) => {
+        if (error) {
+          // 在这里可以进行错误处理逻辑
+          resolve(false)
+        } else {
+          // 在这里可以进行成功处理逻辑
+          resolve(true)
+        }
+      });
+    })
   }
  }
