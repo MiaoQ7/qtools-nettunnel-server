@@ -189,7 +189,7 @@ const server = http.createServer(async (req, res) => {
       let port = parseInt(queryParams['port'])
       console.log(queryParams)
       if (domain && port) {
-        if (!fs.existsSync(path.join(nginx_conf_path, domain + '.conf'))) {
+        if (!fs.existsSync(path.join(nginx_conf_path, domain + '.conf')) && fs.existsSync(path.join(bt_panel_path, 'vhost/letsencrypt', domain, 'privkey.pem'))) {
           let buf = fs.readFileSync(path.join(__dirname, 'template_proxy.conf'), { encoding: 'utf-8' })
           buf = buf.replace(/\$\{server_name\}/g, domain).replace('${proxy_address}', `http://127.0.0.1:${port}`)
           confPath = path.join(nginx_conf_path, domain + '.conf')
