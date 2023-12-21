@@ -21,7 +21,9 @@ const nginx_bin_path = '/www/server/nginx/sbin/nginx'
 
 //===================frps config==========================
 const frps_path = '/opt/frps'
-//===================frps config end==========================
+//===================frps config end======================
+
+const USER_TOKEN = process.env.USER_TOKEN
 
 async function startFrps() {
   if (await processToCheck('frps')) {
@@ -176,33 +178,38 @@ const server = http.createServer(async (req, res) => {
     // 解析查询参数
     let text = 'success'
     const queryParams = querystring.parse(parsedUrl.query);
-    if (parsedUrl.pathname == '/add') {
-      let conf = await findDomainAndPort()
-      if (!conf.domain) {
-        throw Error('domain not find')
-      }
-      await createNginx(conf)
-      text = JSON.stringify(conf)
-    }
-    if (parsedUrl.pathname == '/heartbeat') {
-      let domain = queryParams['domain']
-      let port = parseInt(queryParams['port'])
-      console.log(queryParams)
-      if (domain && port) {
-        if (!fs.existsSync(path.join(nginx_conf_path, domain + '.conf')) && fs.existsSync(path.join(bt_panel_path, 'vhost/letsencrypt', domain, 'privkey.pem'))) {
-          let buf = fs.readFileSync(path.join(__dirname, 'template_proxy.conf'), { encoding: 'utf-8' })
-          buf = buf.replace(/\$\{server_name\}/g, domain).replace('${proxy_address}', `http://127.0.0.1:${port}`)
-          confPath = path.join(nginx_conf_path, domain + '.conf')
-          if (fs.existsSync(confPath)) {
-            fs.unlinkSync(confPath)
-          }
-          fs.writeFileSync(confPath, buf, { encoding: 'utf-8' })
-          await restartNginx()
 
-          text = JSON.stringify({domain, port})
+    if (queryParams['token'] == USER_TOKEN) {
+      if (parsedUrl.pathname == '/add') {
+        let conf = await findDomainAndPort()
+        if (!conf.domain) {
+          throw Error('domain not find')
+        }
+        await createNginx(conf)
+        text = JSON.stringify(conf)
+      }
+      if (parsedUrl.pathname == '/heartbeat') {
+        let domain = queryParams['domain']
+        let port = parseInt(queryParams['port'])
+        console.log(queryParams)
+        if (domain && port) {
+          if (!fs.existsSync(path.join(nginx_conf_path, domain + '.conf')) && fs.existsSync(path.join(bt_panel_path, 'vhost/letsencrypt', domain, 'privkey.pem'))) {
+            let buf = fs.readFileSync(path.join(__dirname, 'template_proxy.conf'), { encoding: 'utf-8' })
+            buf = buf.replace(/\$\{server_name\}/g, domain).replace('${proxy_address}', `http://127.0.0.1:${port}`)
+            confPath = path.join(nginx_conf_path, domain + '.conf')
+            if (fs.existsSync(confPath)) {
+              fs.unlinkSync(confPath)
+            }
+            fs.writeFileSync(confPath, buf, { encoding: 'utf-8' })
+            await restartNginx()
+
+            text = JSON.stringify({domain, port})
+          }
         }
       }
     }
+
+
 
     // 设置响应头
     res.writeHead(200, {'Content-Type': 'text/plain'});
