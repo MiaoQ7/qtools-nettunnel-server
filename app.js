@@ -198,7 +198,7 @@ const server = http.createServer(async (req, res) => {
     // 解析查询参数
     let text = 'success'
     const queryParams = querystring.parse(parsedUrl.query);
-    if (parsedUrl == '/add') {
+    if (parsedUrl.path == '/add') {
       let conf = await findDomainAndPort()
       if (!conf.domain) {
         throw Error('domain not find')
