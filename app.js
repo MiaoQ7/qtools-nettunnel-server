@@ -55,11 +55,11 @@ function deleteFilesInDirectory(directoryPath) {
         return;
       }
       let p = []
-      files.forEach(file => {
+      files.forEach(async file => {
         const filePath = path.join(directoryPath, file);
         if (filePath.indexOf('.qq.miaomiao.press') >= 0) {
           if (fs.lstatSync(filePath).isDirectory()) {
-            deleteDirectory(filePath)
+            await deleteDirectory(filePath)
           } else {
             p.push(new Promise(rr => {
               fs.unlink(filePath, err => {
