@@ -1,0 +1,19 @@
+serverAddr = "qq.miaomiao.press"
+serverPort = 7000
+auth.method = "token"
+auth.token = "0x85hB2P"
+
+[[proxies]]
+name = "web01"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 3000
+remotePort = 7100
+
+
+[[proxies]]
+name = "web02"
+type = "tcp"
+localIP = "127.0.0.1"
+localPort = 3000
+remotePort = 7200
